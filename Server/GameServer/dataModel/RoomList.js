@@ -4,7 +4,7 @@ var Room = require('./Room.js');
 
 var RoomList = {
     createNew : function() {
-        var list = {};
+        let list = {};
         list.id = 0;
         list.roomList = [];
         list.getId = function() { return this.id };
@@ -13,18 +13,19 @@ var RoomList = {
         list.setRoomList = function(roomList) { list.roomList = roomList };
 
         list.isFull = function() {
-            for (let i = 0 ; i < list.roomList.length ; i++) {
-                // console.log(i, list.roomList[i].getPersonList().length, list.roomList[i].getMode());
-                if (list.roomList[i].getPersonList().length < list.roomList[i].getMode())
+            let ki = Object.keys(list.roomList);
+            for (let i = 0 ; i < ki.length ; i++) {
+                if (list.roomList[ki[i]].getPersonList().length < list.roomList[ki[i]].getMode())
                     return false ;
             }
             return true;
         };
 
         list.getAvailableRoom = function() {
-            for (let i = 0 ; i < list.roomList.length ; i++) {
-                if (list.roomList[i].getPersonList().length < list.roomList[i].getMode())
-                    return list.roomList[i];
+            let ki = Object.keys(list.roomList);
+            for (let i = 0 ; i < ki.length ; i++) {
+                if (list.roomList[ki[i]].getPersonList().length < list.roomList[ki[i]].getMode())
+                    return list.roomList[ki[i]];
             }
             return null;
         };
@@ -34,21 +35,23 @@ var RoomList = {
         }
 
         list.getRoomById = function(id) {
-            for (let i = 0 ; i < list.roomList.length ; i++) {
-                if (list.roomList[i].id == id)
-                    return list.roomList[i];
+            let ki = Object.keys(list.roomList);
+            for (let i = 0 ; i < ki.length ; i++) {
+                if (list.roomList[ki[i]].id == id)
+                    return list.roomList[ki[i]];
             }
         }
 
         list.newRoom = function(mode, name) {
             let newRoom = Room.createNew(list.roomList.length+1, name, mode);
-            list.roomList.push(newRoom);
+            list.roomList[name] = newRoom;
             return newRoom;
         }
 
         list.personLeft = function(name) {
-            for (let i = 0 ; i < list.roomList.length ; i++) {
-                let persons = list.roomList[i].getPersonList();
+            let ki = Object.keys(list.roomList);
+            for (let i = 0 ; i < ki.length ; i++) {
+                let persons = list.roomList[ki[i]].getPersonList();
                 for (let j = 0 ; j < persons.length ;j++) {
                     if (persons[i] != name) 
                         continue;
@@ -57,7 +60,7 @@ var RoomList = {
                 }
                 if (persons.length > 0)
                     continue;
-                delete list.roomList[i];
+                delete list.roomList[ki[i]];
             }
             return list;
         }

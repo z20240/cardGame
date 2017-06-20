@@ -17,9 +17,15 @@ $(function() {
     $('#you').text(name); // 你的名字
 
     socket.on('add user',function(data){
+        $('#enemyPlayer').text(enemy);
+        console.log("add user", data);
         if (data.user[0].name == name) {enemy = (typeof(data.user[1]) !== "undefined" ? data.user[1].name : "") ;}
         else {enemy = data.user[0].name;}
-        $('#enemyPlayer').text(enemy);
+        
+        if (data.user.length == 2) { // 雙人模式時
+            socket.emit("game start", data);
+        }
+
     });
 
     socket.on('user left', function(data) {

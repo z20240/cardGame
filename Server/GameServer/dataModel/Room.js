@@ -1,10 +1,9 @@
 "use strict"; //使用strict mode(嚴格模式)
-
 var Constant = require('./Constant.js');
 
 var Room = {
     createNew : function(id, name, mode) {
-        var room = {};
+        let room = {};
         room.id = id;
         room.name = name;
         room.mode = mode;
@@ -21,9 +20,9 @@ var Room = {
 
         room.getDueler = function(mode, waitingList, person) {
             switch(mode) {
-                case Constant.MODE.PVE: return getPVE(person) ; // 跟電腦對戰
-                case Constant.MODE.PVP: return getPVP(waitingList, person); // 跟一個玩家對戰
-                case Constant.MODE.DRAFT: return getDraft(waitingList, person); // 跟三個玩家對戰
+                case Constant.BATTLE_MODE.PVE: return getPVE(person) ; // 跟電腦對戰
+                case Constant.BATTLE_MODE.PVP: return getPVP(waitingList, person); // 跟一個玩家對戰
+                case Constant.BATTLE_MODE.DRAFT: return getDraft(waitingList, person); // 跟三個玩家對戰
             }
         }
 
