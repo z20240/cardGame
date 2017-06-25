@@ -2,7 +2,6 @@
 var Constant = require('./Constant.js');
 var Card = require('./Card.js');
 
-
 var Deck = {
     createNew : function(id, name, cards) {
         let deck = {};

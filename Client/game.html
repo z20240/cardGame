@@ -9,26 +9,30 @@
                 <th class="active">
                     <p>對方的除外牌區數量</p>
                     <div>
-                        <strong>0</strong>
+                        <strong id='enemyBanishSize'>0</strong>
                     </div>
                 </th>
                 <th class="active">
                     <p>對方的棄牌區數量</p>
                     <div>
-                        <strong>0</strong>
+                        <strong id='enemyGraveSize'>0</strong>
                     </div>
                 </th>
                 <th class="active">
                     <p>對方的牌組數量</p>
                     <div>
-                        <strong>0</strong>
+                        <strong id='enemyDeckSize'>0</strong>
                     </div>
                 </th>
                 <th class="active">
                     <p>玩家</p>
                     <p id="enemyPlayer"></p>
                     <div>
-                        <h5><span>防禦力</span><span>0</span></h5>
+                        <h5><span>[Atk] </span><span id='enemyAtk'>0</span></h5>
+                        <h5><span>[Matk] </span><span id='enemyMatk'>0</span></h5>
+                        <h5><span>[Def] </span><span id='enemyDef'>0</span></h5>
+                        <h5><span>[Card Atk] </span><span id='enemyCardAtk'>0</span></h5>
+                        <h5><span>[Card Def] </span><span id='enemyCardDef'>0</span></h5>
                     </div>
                 </th>
             </tr>
@@ -69,13 +73,17 @@
                     <p>玩家</p>
                     <p id="you"></p>
                     <div>
-                        <h5><span>防禦力</span><span>0</span></h5>
+                        <h5><span>[Atk] </span><span id='playerAtk'>0</span></h5>
+                        <h5><span>[Matk] </span><span id='playerMatk'>0</span></h5>
+                        <h5><span>[Def] </span><span id='playerDef'>0</span></h5>
+                        <h5><span>[Card Atk] </span><span id='playerCardAtk'>0</span></h5>
+                        <h5><span>[Card Def] </span><span id='playerCardDef'>0</span></h5>
                     </div>
                 </th>
                 <th class="active">
                     <p>玩家的牌組數量</p>
                     <div>
-                        <strong id='playerDecksize'>0</strong>
+                        <strong id='playerDeckSize'>0</strong>
                     </div>
                 </th>
                 <th class="active">
@@ -99,17 +107,32 @@
              <tr>
                 <th class="active">
                     <div>
-                        <button id='handcard1'>手牌卡片一</button>
+                        <button id='handcard1'>
+                            <p><label id='hand_name1'></label></p>
+                            <p><span>Cost </span><label id='hand_cost1'></label></p>
+                            <p><span>Atk </span><label id='hand_atk1'></label></p>
+                            <p><span>Def </span><label id='hand_def1'></label></p>
+                        </button>
                     </div>
                 </th>
                 <th class="active">
                     <div>
-                        <button id='handcard2'>手牌卡片二</button>
+                        <button id='handcard2'>
+                            <p><label id='hand_name2'></label></p>
+                            <p><span>Cost </span><label id='hand_cost2'></label></p>
+                            <p><span>Atk </span><label id='hand_atk2'></label></p>
+                            <p><span>Def </span><label id='hand_def2'></label></p>
+                        </button>
                     </div>
                 </th>
                 <th class="active">
                     <div>
-                        <button id='handcard3'>手牌卡片三</button>
+                        <button id='handcard3'>
+                            <p><label id='hand_name3'></label></p>
+                            <p><span>Cost </span><label id='hand_cost3'></label></p>
+                            <p><span>Atk </span><label id='hand_atk3'></label></p>
+                            <p><span>Def </span><label id='hand_def3'></label></p>
+                        </button>
                     </div>
                 </th>
              </tr>

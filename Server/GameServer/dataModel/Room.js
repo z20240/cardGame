@@ -5,15 +5,18 @@ var Room = {
     createNew : function(id, name, mode) {
         let room = {};
         room.id = id;
+        room.count = 0;
         room.name = name;
         room.mode = mode;
         room.personList = [];
 
         room.getId = function() { return parseInt(this.id) };
+        room.getCount = function(count) { return this.count };
         room.getName = function() { return this.name };
         room.getMode = function() { return parseInt(this.mode) };
         room.getPersonList = function() { return this.personList };
         room.setId = function(id) { this.id = id };
+        room.setCount = function(count) { this.count = count };
         room.setName = function(name) { this.name = name };
         room.setMode = function(mode) { this.mode = mode };
         room.setPersonList = function(personList) { this.personList = personList };
@@ -29,6 +32,13 @@ var Room = {
         room.getPersonById = function(id) {
             for(let i = 0 ; i < room.personList.length ; i++) {
                 if (room.personList[i].id == id) return room.personList[i];
+            }
+            return null;
+        }
+
+        room.getPersonByName = function(name) {
+            for(let i = 0 ; i < room.personList.length ; i++) {
+                if (room.personList[i].name == name) return room.personList[i];
             }
             return null;
         }

@@ -30,8 +30,8 @@ var RoomList = {
             return null;
         };
 
-        list.getRoomByIdx = function(idx) {
-            return list.roomList[idx];
+        list.getRoomByName = function(name) { // roomName = roomIndx
+            return list.roomList[name];
         }
 
         list.getRoomById = function(id) {
