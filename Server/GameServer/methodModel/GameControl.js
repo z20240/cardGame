@@ -8,12 +8,7 @@ var GameControl = {
         let room = roomList.getRoomByName(roomId);
         console.log('In game control');
         // 開始計費
-        setInterval(doCostCounter, 2500, io, socket, {roomId: roomId, user: room.getPersonList()});
-    },
-
-    counter : function(io, socket, gameInfo, roomList) {
-        let gameObj = doCountTimer(gameInfo, roomList);
-        socket.in(gameInfo.roomId).emit('add timer', gameObj);
+        setInterval(doCountTimer, 2500, io, socket, roomId, roomList);
     },
 
     playCard : function(io, socket, gameInfo, roomList) {
@@ -26,21 +21,16 @@ var GameControl = {
     }
 }
 
-function doCostCounter(io, socket, gameRoom) {
-    socket.in(gameRoom.roomId).emit('cost timer');
-    return;
-}
-
-
-function doCountTimer(gameInfo, roomList) {
-    let room = roomList.getRoomByName(gameInfo.roomId);
-    let player = room.getPersonById(gameInfo.user[0]);
-    let enemy = room.getPersonById(gameInfo.user[1]);
-    player.cost = Math.min((player.cost+1), MAX_COST);
-    enemy.cost = Math.min((enemy.cost+1), MAX_COST);
-    // console.log("player", player);
-    // console.log("enemy", enemy);
-    return { roomId : gameInfo.roomId, user : [player, enemy] };
+function doCountTimer(io, socket, roomId, roomList) {
+    let str;
+    let room = roomList.getRoomByName(roomId);
+    for (let i = 0 ; i < room.getPersonList().length ; i++) {
+        room.getPersonList()[i].cost = Math.min((room.getPersonList()[i].cost+1), MAX_COST);
+        str += ("player_" + i + " : " + room.getPersonList()[i].cost + "    ");
+    }
+    console.log(str);
+    io.in(roomId).emit('cost timer', {user: room.getPersonList(), roomId: roomId});
+    return { roomId : roomId, user : room.getPersonList() };
 }
 
 
@@ -48,13 +38,14 @@ function doCountTimer(gameInfo, roomList) {
 function playCard(room, player, enemy, idx) {
     let cost = player.getCost();
     let roomId = room.getName();
-    let card = "";
-    console.log("player", player);
-    console.log( "enemy", enemy);
+    let card = null;
+    // console.log("player", player);
+    // console.log( "enemy", enemy);
 
     let enemyDef = enemy.getDef() + enemy.getCardDef();
     let dmg = 0;
     // 1. 檢查費用夠不夠，不夠就直接 return;
+    console.log(idx, "  player_cost:", player.hand[idx].cost, " card_cost:", cost);
     if (player.hand[idx].cost > cost)
         return { roomId : roomId, user : [player, enemy] } ;
 
@@ -66,13 +57,16 @@ function playCard(room, player, enemy, idx) {
 
     // 3. 出牌處理效果(之後做 call method)
 
-    // 4. 處理傷害 (call method)
+    // 4-1. 處理傷害 (call method)
     dmg = calcardDmg(player, card, enemyDef);
 
     for(let i = 0 ; i < dmg ; i++) { // 噴牌
         enemy.grave.push(enemy.deck.draw());
         // enemy.grave.push(enemy.deck.cards.pop());
     }
+
+    // 4-2. 獲得卡片防禦力
+    player.cardDef += card.def;
 
     // 對方防禦回復
     enemy.cardDef = 0;
@@ -86,18 +80,25 @@ function playCard(room, player, enemy, idx) {
 
 
 function calcardDmg(player, card, enemyDef) {
+    let val = 0;
     switch(card.type) {
         case Constant.CARD_TYPE.WHITE_MAGIC :
         case Constant.CARD_TYPE.BLACK_MAGIC :
-            return (player.matk + card.atk + player.cardDmg) - enemyDef;
+            val = (player.matk + card.atk + player.cardDmg) - enemyDef;
+            console.log("(player_matk)" + player.matk + " + (card_atk)" + card.atk + " - (enemyDef)" + enemyDef + " = " + val);
+            return val;
         case Constant.CARD_TYPE.MELLEE :
         case Constant.CARD_TYPE.RANGE :
-            return (player.atk + card.atk + player.cardDmg) - enemyDef;
+            val = (player.atk + card.atk + player.cardDmg) - enemyDef;
+            console.log("(player_atk)" + player.atk + " + (card_atk)" + card.atk + " - (enemyDef)" + enemyDef + " = " + val);
+            return val;
         default:
         case Constant.CARD_TYPE.POISON :
         case Constant.CARD_TYPE.NPC :
         case Constant.CARD_TYPE.DECORATION :
-            return (card.atk + player.cardDmg) - enemyDef;
+            val = (card.atk + player.cardDmg) - enemyDef;
+            console.log("(card_atk)" + card.atk + " - (enemyDef)" + enemyDef + " = " + val);
+            return ;
     }
 }
 

@@ -20,7 +20,7 @@ var RoomDispatch = function(io, socket, roomList, person) {
     roomInfo.room.getPersonList().push(person);
     socket.join(roomInfo.roomId);
     io.in(roomInfo.roomId).emit('add user', {user: roomInfo.room.getPersonList(), roomId: roomInfo.roomId});
-    return roomList;
+    return [roomList, roomInfo.roomId];
 }
 
 var NewRoom = function(roomList) {

@@ -22,14 +22,10 @@ $(function() {
         initUserConfiguration(data);
     });
 
-    socket.on('cost timer', function() {
-        socket.emit('cost timer', {roomId : g_gameObj.roomId, user : [g_gameObj.user[0].id, g_gameObj.user[1].id]});
-    });
-
-    socket.on('add timer', function(data) {
+    socket.on('cost timer', function(data) {
         g_gameObj = data;
         let playerlist = getPlayerPos(g_gameObj);
-        console.log('add timer', playerlist.player, playerlist.enemy);
+        console.log('cost timer', playerlist.player, playerlist.enemy);
         drawGround(playerlist.player, playerlist.enemy);
     });
 
@@ -60,10 +56,6 @@ function initUserConfiguration(data) {
     $('#enemyPlayer').text(enemyName);
 
     if (data.user.length == 2) { // 雙人模式時
-        ;
-        // socket.emit("game start", data);
-        socket.emit("game start", data.roomId);
-        g_gameObj = data;
         drawGround(you, enemy);
     }
 }
@@ -133,7 +125,7 @@ function drawGround(player, enemy) {
 
     $('#hand_cost1').text(player.hand[0].cost);
     $('#hand_cost2').text(player.hand[1].cost);
-    $('#hand_cost3').text(player.hand[1].cost);
+    $('#hand_cost3').text(player.hand[2].cost);
     
     $('#hand_atk1').text(player.hand[0].atk);
     $('#hand_atk2').text(player.hand[1].atk);

@@ -15,21 +15,18 @@ function sockets(io) {
         console.log('is Connected');
         
         socket.on('add user', function(name) {
+            let roomId;
             socket.personName = name;
             let person = Person.createNew(personCount++, 2, name, 100, DeckList.createNew()[0]);
-            // let person = new Person(personCount++, 2, name, 100, DeckList.createNew()[0]);
-            roomList = RoomDispatch(io, socket, roomList, person);
+            [roomList, roomId] = RoomDispatch(io, socket, roomList, person);
+            if ( roomList.getRoomByName(roomId).getPersonList().length == 2 ) // 雙人對戰時，兩人開始
+                GameControl.gameStart(io, socket, roomId, roomList);
         });
 
-        // socket.on('game start', function(gameRoom) {
-        socket.on('game start', function(roomId) {
-            console.log('Game start');
-            GameControl.gameStart(io, socket, roomId, roomList);
-        });
-
-        socket.on('cost timer', function(gameInfo) {
-            GameControl.counter(io, socket, gameInfo, roomList);
-        });
+        // socket.on('game start', function(roomId) {
+        //     console.log('Game start');
+        //     GameControl.gameStart(io, socket, roomId, roomList);
+        // });
 
         socket.on('play card', function(gameInfo) {
             GameControl.playCard(io, socket, gameInfo, roomList);
