@@ -2,71 +2,71 @@
 var Constant = require('./Constant.js');
 var Room = require('./Room.js');
 
-var RoomList = {
-    createNew : function() {
-        let list = {};
-        list.id = 0;
-        list.roomList = [];
-        list.getId = function() { return this.id };
-        list.getRoomList = function() { return list.roomList };
-        list.setId = function(id) { list.id = id };
-        list.setRoomList = function(roomList) { list.roomList = roomList };
-
-        list.isFull = function() {
-            let ki = Object.keys(list.roomList);
-            for (let i = 0 ; i < ki.length ; i++) {
-                if (list.roomList[ki[i]].getPersonList().length < list.roomList[ki[i]].getMode())
-                    return false ;
-            }
-            return true;
-        };
-
-        list.getAvailableRoom = function() {
-            let ki = Object.keys(list.roomList);
-            for (let i = 0 ; i < ki.length ; i++) {
-                if (list.roomList[ki[i]].getPersonList().length < list.roomList[ki[i]].getMode())
-                    return list.roomList[ki[i]];
-            }
-            return null;
-        };
-
-        list.getRoomByName = function(name) { // roomName = roomIndx
-            return list.roomList[name];
-        }
-
-        list.getRoomById = function(id) {
-            let ki = Object.keys(list.roomList);
-            for (let i = 0 ; i < ki.length ; i++) {
-                if (list.roomList[ki[i]].id == id)
-                    return list.roomList[ki[i]];
-            }
-        }
-
-        list.newRoom = function(mode, name) {
-            let newRoom = Room.createNew(list.roomList.length+1, name, mode);
-            list.roomList[name] = newRoom;
-            return newRoom;
-        }
-
-        list.personLeft = function(name) {
-            let ki = Object.keys(list.roomList);
-            for (let i = 0 ; i < ki.length ; i++) {
-                let persons = list.roomList[ki[i]].getPersonList();
-                for (let j = 0 ; j < persons.length ;j++) {
-                    if (persons[i] != name) 
-                        continue;
-                    delete persons[i];
-                    break;
-                }
-                if (persons.length > 0)
-                    continue;
-                delete list.roomList[ki[i]];
-            }
-            return list;
-        }
-
-        return list;
+class RoomList {
+    constructor () {
+        this._id = 0;
+        this._roomlist = [];
     }
-};
+
+    get id() { return this._id };
+    get roomlist() { return this._roomlist };
+
+    set id(value) { this._id = value };
+    set roomlist(value) { this._roomlist = value };
+
+    isFull() {
+        let ki = Object.keys(this._roomlist);
+        for (let i = 0 ; i < ki.length ; i++) {
+            if (this._roomlist[ki[i]].personList.length < this._roomlist[ki[i]].mode)
+                return false ;
+        }
+        return true;
+    };
+
+    getAvailableRoom() {
+        let ki = Object.keys(this._roomlist);
+        for (let i = 0 ; i < ki.length ; i++) {
+            if (this._roomlist[ki[i]].personList.length < this._roomlist[ki[i]].mode)
+                return this._roomlist[ki[i]];
+        }
+        return null;
+    };
+
+    getRoomByName(name) { // roomName = roomIndx
+        return this._roomlist[name];
+    }
+
+    getRoomById(id) {
+        let ki = Object.keys(this._roomlist);
+        for (let i = 0 ; i < ki.length ; i++) {
+            if (this._roomlist[ki[i]].id == id)
+                return this._roomlist[ki[i]];
+        }
+    }
+
+    newRoom(mode, name) {
+        // let newRoom = Room.createNew(this._roomlist.length+1, name, mode);
+        let newRoom = new Room(this._roomlist.length+1, name, mode);
+        this._roomlist[name] = newRoom;
+        return newRoom;
+    }
+
+    personLeft(name) {
+        let ki = Object.keys(this._roomlist);
+        for (let i = 0 ; i < ki.length ; i++) {
+            let persons = this._roomlist[ki[i]].personList;
+            for (let j = 0 ; j < persons.length ;j++) {
+                if (persons[i] != name) 
+                    continue;
+                delete persons[i];
+                break;
+            }
+            if (persons.length > 0)
+                continue;
+            delete this._roomlist[ki[i]];
+        }
+        return this;
+    }
+}
 
 exports = module.exports = RoomList;

@@ -6,8 +6,8 @@ var GameControl = require('../methodModel/GameControl.js');
 var DeckList = require('../CardData/DeckList.js');
 var Dumper = require('../methodModel/Dumper.js');
 
-var roomList = RoomList.createNew();
-// var roomList = new RoomList();
+// var roomList = RoomList.createNew();
+var roomList = new RoomList();
 
 var personCount = 0;
 function sockets(io) {
@@ -17,16 +17,13 @@ function sockets(io) {
         socket.on('add user', function(name) {
             let roomId;
             socket.personName = name;
-            let person = Person.createNew(personCount++, 2, name, 100, DeckList.createNew()[0]);
+            // let person = Person.createNew(personCount++, 2, name, 100, DeckList.createNew()[0]);
+            let person = new Person(personCount++, 2, name, 100, new DeckList()[0]);
+            console.log("add User roomList:", roomList, name);
             [roomList, roomId] = RoomDispatch(io, socket, roomList, person);
-            if ( roomList.getRoomByName(roomId).getPersonList().length == 2 ) // 雙人對戰時，兩人開始
+            if ( roomList.getRoomByName(roomId).personList.length == 2 ) // 雙人對戰時，兩人開始
                 GameControl.gameStart(io, socket, roomId, roomList);
         });
-
-        // socket.on('game start', function(roomId) {
-        //     console.log('Game start');
-        //     GameControl.gameStart(io, socket, roomId, roomList);
-        // });
 
         socket.on('play card', function(gameInfo) {
             GameControl.playCard(io, socket, gameInfo, roomList);

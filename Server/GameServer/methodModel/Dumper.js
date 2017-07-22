@@ -16,6 +16,8 @@ module.exports = function mydump(arr,level) {
             else {
                 if (typeof(value) != 'function')
                     dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
+                else
+                    dumped_text += level_padding + "[func] '" + item + "' => \"" + value + "\"\n";
             }
         }
     } else { 

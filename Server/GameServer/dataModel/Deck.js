@@ -2,41 +2,56 @@
 var Constant = require('./Constant.js');
 var Card = require('./Card.js');
 
-var Deck = {
-    createNew : function(id, name, cards) {
-        let deck = {};
-        deck.id = id ;
-        deck.name = name ;
-        deck.cards = cards;
-        
-        deck.getId = function() { return this.id };
-        deck.getName = function() { return this.name };
-        deck.setId = function(id) { this.id = id };
-        deck.setName = function(name) { this.name = name };
-
-        deck.shuffle = function() {
-            let min = 0;
-            let max = this.cards.length;
-            let rnd = Math.floor(Math.random()*(max - min) + min);
-            for (let i = this.cards.length - 1 ; i > 0 ; i--) {
-                let index = Math.floor(Math.random()*(i - min) + min);
-                // Simple swap
-                [this.cards[i], this.cards[index]] = [this.cards[index], this.cards[i]];
-            }
-            return this.cards;
-        }
-
-        deck.draw = function() {
-            return this.cards.pop();
-        }
-
-        deck.insert = function(card) {
-            return this.cards.push(card);
-        }
-
-        return deck;
+class Deck {
+    constructor (id, name, cards) {
+        this._id = id ;
+        this._name = name ;
+        this._cards = cards;
     }
-};
 
+    get id() {
+        return this._id ;
+    }
+
+    get name() { 
+        return this._name ;
+    }
+
+    get cards() {
+        return this._cards;
+    }
+
+    set id(value) { 
+        this._id = value ;
+    }
+
+    set name(value) { 
+        this._name = value ;
+    }
+
+    set cards(value) {
+        this._cards = value;
+    }
+
+    shuffle() {
+        let min = 0;
+        let max = this._cards.length;
+        let rnd = Math.floor(Math.random()*(max - min) + min);
+        for (let i = this._cards.length - 1 ; i > 0 ; i--) {
+            let index = Math.floor(Math.random()*(i - min) + min);
+            // Simple swap
+            [this._cards[i], this._cards[index]] = [this._cards[index], this._cards[i]];
+        }
+        return this._cards;
+    }
+
+    draw() {
+        return this._cards.pop();
+    }
+
+    insert(_card) {
+        return this._cards.push(_card);
+    }
+}
 
 exports = module.exports = Deck;
