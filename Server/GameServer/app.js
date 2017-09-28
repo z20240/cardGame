@@ -8,11 +8,11 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var cardMethod = require('./routes/cardMethod');
-var socket = require('./socket/socket'); // 2. 將剛剛寫的 socket.js 導入
+var game = require('./socket/socket'); // 2. 將剛剛寫的 socket.js 導入
 
 var app = express();
 app.io = require('socket.io')() ; // 3. 將 socket.io 導入
-socket(app.io); // 4. 將app.io 傳至 socket.js
+game(app.io); // 4. 將app.io 傳至 socket.js
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

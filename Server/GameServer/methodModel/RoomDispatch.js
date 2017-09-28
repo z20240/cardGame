@@ -1,5 +1,5 @@
 var Constant = require('../dataModel/Constant.js');
-var Dumper = require('../methodModel/Dumper.js');
+var Dumper = require('../tool/Dumper.js');
 
 var RoomDispatch = function(io, socket, roomList, person) {
     /* 進行配對，給予房間編號 */

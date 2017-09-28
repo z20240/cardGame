@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'); 				// mongoose for mongodb
 mongoose.connect("mongodb://localhost:27017/Carddb"); // host:port/dbname
-var cardTool = require('../methodModel/CardTool.js');
+var cardTool = require('../tool/CardTool.js');
 
 
 /* GET users listing. */
