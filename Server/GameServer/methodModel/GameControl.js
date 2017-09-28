@@ -1,17 +1,17 @@
 var Constant = require('../dataModel/Constant.js');
-var Dumper = require('../methodModel/Dumper.js');
+var Dumper = require('../tool/Dumper.js');
 
 const MAX_COST = 10;
 
-var GameControl = {
-    gameStart : function(io, socket, roomId, roomList) {
+class GameControl {
+    static gameStart(io, socket, roomId, roomList) {
         let room = roomList.getRoomByName(roomId);
         console.log('In game control');
         // 開始計費
         setInterval(doCountTimer, 2500, io, socket, roomId, roomList);
-    },
+    }
 
-    playCard : function(io, socket, gameInfo, roomList) {
+    static playCard(io, socket, gameInfo, roomList) {
         let room = roomList.getRoomByName(gameInfo.roomId);
         let player = room.getPersonById(gameInfo.playerId);
         let enemy = room.getPersonById(gameInfo.enemyId);
@@ -19,7 +19,9 @@ var GameControl = {
         let gameObj = playCard(room, player, enemy, handIdx);
         io.in(gameInfo.roomId).emit('player show card', gameObj);
     }
-}
+
+
+} 
 
 function doCountTimer(io, socket, roomId, roomList) {
     let str = "";

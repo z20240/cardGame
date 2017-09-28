@@ -1,45 +1,28 @@
-var Constant = require('../dataModel/Constant.js');
-var RoomList = require('../dataModel/RoomList.js');
-var Person = require('../dataModel/Person.js');
-var RoomDispatch = require('../methodModel/RoomDispatch.js');
-var GameControl = require('../methodModel/GameControl.js');
-var DeckList = require('../CardData/DeckList.js');
-var Dumper = require('../methodModel/Dumper.js');
+var PlayerControl = require('../gameControl/playerControl.js');
 
-// var roomList = RoomList.createNew();
-var roomList = new RoomList();
-
+var playerControl = new PlayerControl();
 var personCount = 0;
-function sockets(io) {
-    io.on('connection', function(socket) {
+
+function game(io) {
+    io.on('connection', (socket) => {
         console.log('is Connected');
         
-        socket.on('add user', function(name) {
-            let roomId;
-            socket.personName = name;
-            // let person = Person.createNew(personCount++, 2, name, 100, DeckList.createNew()[0]);
-            let person = new Person(personCount++, 2, name, 100, new DeckList()[0]);
-            console.log("add User roomList:", roomList, name);
-            [roomList, roomId] = RoomDispatch(io, socket, roomList, person);
-            if ( roomList.getRoomByName(roomId).personList.length == 2 ) // 雙人對戰時，兩人開始
-                GameControl.gameStart(io, socket, roomId, roomList);
+        // user in
+        socket.on('add user', (name) => {
+            personCount++;
+            playerControl.addUser(socket, io, name, personCount);
         });
 
-        socket.on('play card', function(gameInfo) {
-            GameControl.playCard(io, socket, gameInfo, roomList);
+        // playcard
+        socket.on('play card', (gameInfo) => {
+            playerControl.playCard(socket, io, gameInfo)
         }) ;
 
         // left
-        socket.on('disconnect', function() {
-            let name = socket.personName;
-            let roomlist = roomList.personLeft(name);
-            let roomId = socket.roomId;
-            console.log(roomId, name + " left.");
-            socket.to(roomId).emit('user left', {roomId: roomId, name: name});
+        socket.on('disconnect', () => {
+            playerControl.userDisconnect(socket, io)
         });
     });
 }
 
-
-
-module.exports = sockets;
+module.exports = game;
