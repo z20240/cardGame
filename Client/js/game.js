@@ -4,6 +4,7 @@ var g_yourName;
 
 $(function() {
     let playerName = randomName();
+    let uid = randomUID();
     let job = getJob();
     let enemy = "";
     playerName = prompt("請輸入暱稱", playerName);
@@ -15,7 +16,7 @@ $(function() {
     console.log("playerName", playerName);
 
     // 告訴 server 玩家進入了
-    socket.emit("add user", playerName);
+    socket.emit("add user", {playerName, uid});
 
     $('#you').text(playerName); // 你的名字
     g_yourName = playerName;
@@ -49,7 +50,7 @@ $(function() {
     socket.on('user left', function(data) {
         console.log("user left", data);
         if ($('#enemyPlayer').text() == data._name) {$('#enemyPlayer').text("");}
-    });        
+    });
 });
 
 
@@ -108,7 +109,7 @@ function getPlayerPos(data) {
     } else {
         return { player: data.user[1], enemy: data.user[0] };
     }
-} 
+}
 
 
 function randomName() {
@@ -118,6 +119,17 @@ function randomName() {
         name += charater[Math.floor(Math.random() * (charater.length))];
     }
     return name;
+}
+
+
+function randomUID() {
+    let charater = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let set = 1, uid = 0;
+    for (let i = 0 ; i < 8 ; i++) {
+        uid += charater[Math.floor(Math.random() * (charater.length))] * set;
+        set *= 10;
+    }
+    return uid;
 }
 
 
@@ -138,7 +150,7 @@ function drawGround(player, enemy) {
     $('#hand_cost1').text(player._hand[0]._cost);
     $('#hand_cost2').text(player._hand[1]._cost);
     $('#hand_cost3').text(player._hand[2]._cost);
-    
+
     $('#hand_atk1').text(player._hand[0]._atk);
     $('#hand_atk2').text(player._hand[1]._atk);
     $('#hand_atk3').text(player._hand[2]._atk);
@@ -187,5 +199,5 @@ function drawGround(player, enemy) {
     $('#enemyGraveSize').text(enemy._grave.length);
 
     $('#enemyPlayer').text(enemy._name);
-    
+
 }
