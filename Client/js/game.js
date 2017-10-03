@@ -5,6 +5,7 @@ var g_yourName;
 $(function() {
     let playerName = randomName();
     let uid = randomUID();
+    let mode = Constant.BATTLE_MODE.PVP;
     let job = getJob();
     let enemy = "";
     playerName = prompt("請輸入暱稱", playerName);
@@ -16,7 +17,7 @@ $(function() {
     console.log("playerName", playerName);
 
     // 告訴 server 玩家進入了
-    socket.emit("add user", {playerName, uid});
+    socket.emit("add user", {uid : uid, name : playerName, mode : mode});
 
     $('#you').text(playerName); // 你的名字
     g_yourName = playerName;
