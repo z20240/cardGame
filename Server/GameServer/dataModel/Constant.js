@@ -1,4 +1,5 @@
 exports = module.exports = {
+    MAX_COST : 10,
     BATTLE_MODE : {
         PVE : 1,
         PVP : 2,

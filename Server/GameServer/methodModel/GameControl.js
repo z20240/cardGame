@@ -1,40 +1,15 @@
 var Constant = require('../dataModel/Constant.js');
 var Dumper = require('../tool/Dumper.js');
 
-const MAX_COST = 10;
-
 class GameControl {
-    static gameStart(io, socket, roomId, roomList) {
-        let room = roomList.getRoomByName(roomId);
-        console.log('In game control');
-        // 開始計費
-        setInterval(doCountTimer, 2500, io, socket, roomId, roomList);
-    }
-
-    static playCard(io, socket, gameInfo, roomList) {
-        let room = roomList.getRoomByName(gameInfo.roomId);
+    static playCard(gameInfo, room) {
         let player = room.getPersonById(gameInfo.playerId);
         let enemy = room.getPersonById(gameInfo.enemyId);
         let handIdx = gameInfo.handIdx;
         let gameObj = playCard(room, player, enemy, handIdx);
-        io.in(gameInfo.roomId).emit('player show card', gameObj);
+        return gameObj;
     }
-
-
 } 
-
-function doCountTimer(io, socket, roomId, roomList) {
-    let str = "";
-    let room = roomList.getRoomByName(roomId);
-    for (let i = 0 ; i < room.personList.length ; i++) {
-        room.personList[i].cost = Math.min((room.personList[i].cost+1), MAX_COST);
-        str += ("player_" + i + " : " + room.personList[i].cost + "    ");
-    }
-    console.log(str);
-    io.in(roomId).emit('cost timer', {user: room.personList, roomId: roomId});
-    return { roomId : roomId, user : room.personList };
-}
-
 
 // 玩家出牌
 function playCard(room, player, enemy, idx) {

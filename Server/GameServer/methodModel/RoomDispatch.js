@@ -1,37 +1,25 @@
 var Constant = require('../dataModel/Constant.js');
 var Dumper = require('../tool/Dumper.js');
 
-var RoomDispatch = function(io, socket, roomList, person) {
+var RoomDispatch = function(roomList, mode, player) {
     /* 進行配對，給予房間編號 */
-    let roomInfo;
+    let room;
+
     console.log("roomList:", roomList);
-    if (roomList.isFull()) { // 所有房間都滿了就要開新房間
-        roomInfo = NewRoom(roomList);       
-        console.log("Create Room" + roomInfo.roomId);
-    } else { // 加入房間
-        roomInfo = JoinRoom(roomList);
-        console.log("Join room" + roomInfo.roomId);
+
+    // 所有房間都滿了就要開新房間
+    if (roomList.isFull()) { 
+        room = roomList.newRoom(mode, roomList.getRoomNumber()+1);
+        console.log("Create Room" + room.id);
+    } else { // 取得適合的房間
+        room = roomList.getAvailableRoom();
+        console.log("Join room" + room.id);
     }
 
-    socket.roomId = roomInfo.roomId;
-    
-    console.log("[Room]", Dumper(roomInfo.room, 4));
-    roomInfo.room.personList.push(person);
-    socket.join(roomInfo.roomId);
-    io.in(roomInfo.roomId).emit('add user', {user: roomInfo.room.personList, roomId: roomInfo.roomId});
-    return [roomList, roomInfo.roomId];
-}
-
-var NewRoom = function(roomList) {
-    let roomId = roomList.roomlist.length+1;
-    let room = roomList.newRoom(Constant.BATTLE_MODE.PVP, roomId);
-    return {room: room, roomId: roomId};
-}
-
-var JoinRoom = function(roomList) {
-    let room = roomList.getAvailableRoom();
-    let roomId = room.id;
-    return {room: room, roomId: roomId};
+    player.roomid = room.id;
+    room.personList.push(player); // 加入房間
+    console.log("[Room]", Dumper(room, 4));
+    return room;
 }
 
 module.exports = RoomDispatch;

@@ -1,20 +1,6 @@
 var Constant = require('../dataModel/Constant.js');
 var Card = require('../dataModel/Card.js');
 
-
-// var DeckList = {
-//     createNew : function() {
-//         let deckList = []; 
-        
-//         let deck = {};
-//         deck.id = 1;
-//         deck.name = "testDeck1";
-//         deck.cards = creatDeck1();
-//         deckList.push(deck);
-//         return deckList;
-//     }
-// }
-
 class DeckList {
     constructor () {
         let deck = {};

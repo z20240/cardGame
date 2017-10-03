@@ -1,6 +1,7 @@
 var Constant = require('../dataModel/Constant.js');
 var RoomList = require('../dataModel/RoomList.js');
 var Person = require('../dataModel/Person.js');
+var Mode = require('../dataModel/Mode.js');
 var RoomDispatch = require('../methodModel/RoomDispatch.js');
 var GameControl = require('../methodModel/GameControl.js');
 var DeckList = require('../CardData/DeckList.js');
@@ -12,31 +13,55 @@ class RoomControl {
         this.roomList = new RoomList();
     }
 
-    addUser(socket, io, name, uid) {
-        let roomId;
+    get roomlist() { return this.roomList }
+
+    addUser(socket, io, player) {
+        let room;
         let self = this;
-        socket.personName = name;
-        let person = new Person(uid, 2, name, 100, new DeckList()[0]);  // 要拉出來
-        console.log("add User roomList:", self.roomList, name);
+        socket.personName = player.name;
+        socket.personId = player.id;
 
-        [self.roomList, roomId] = RoomDispatch(io, socket, self.roomList, person); // 應該要放到 room.js 去
+        room = RoomDispatch(self.roomList, Constant.BATTLE_MODE.PVP, player);
 
-         // 雙人對戰時，兩人開始
-        if ( self.roomList.getRoomByName(roomId).personList.length == 2 ) // 應該要有 mode
-            GameControl.gameStart(io, socket, roomId, self.roomList); // io 要拉出來
+        socket.roomId = room.id;
+        socket.join(room.id);
+        io.in(room.id).emit('add user', {user: room.personList, roomId: room.id});
+
+        return room;
     }
 
-    playCard(socket, io, gameInfo) {
+    gameStart(socket, io, room, mode) {
         let self = this;
-        GameControl.playCard(io, socket, gameInfo, self.roomList);
+
+        // 如果不人數不符合，不可開始
+        if ( !Mode.checkGameStart(room.personList.length, mode ) )
+            return ;
+        
+        // 開始計費
+        room.energyTimerId = setInterval(doCountTimer, 2500, socket, io, room);
+
     }
 
     userDisconnect(socket, io) {
         let self = this;
-        let roomlist = self.roomList.personLeft(socket.personName);
-        socket.to(socket.roomId).emit('user left', {roomId: socket.roomId, name: socket.personName});
+        let removeSuccess = self.roomList.playerLeft(socket.personId, socket.roomId);
+        socket.to(socket.roomId).emit('user left', {roomId: socket.roomId, name: socket.personName, uid: socket.personId});
         console.log(socket.roomId, socket.personName + " left.");
     }
 }
+
+
+function doCountTimer(socket, io, room) {
+    let str = "";
+
+    for (let i = 0 ; i < room.personList.length ; i++) {
+        room.personList[i].cost = Math.min((room.personList[i].cost+1), Constant.MAX_COST);
+        str += ("player_" + i + " : " + room.personList[i].cost + "    ");
+    }
+    console.log(str);
+    io.in(room.id).emit('cost timer', {user: room.personList, roomId: room.id});
+    return { roomId : room.id, user : room.personList };
+}
+
 
 module.exports = RoomControl;

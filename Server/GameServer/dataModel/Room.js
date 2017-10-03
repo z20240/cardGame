@@ -5,6 +5,7 @@ class Room {
     constructor (id, name, mode) {
         this._id = id;
         this._count = 0;
+        this._energyTimerId = 0;
         this._name = name;
         this._mode = mode;
         this._personList = [];
@@ -25,6 +26,10 @@ class Room {
     get personList() { 
         return this._personList;
     }
+
+    get energyTimerId() {
+        return this._energyTimerId;
+    }
     
     set id(value) { 
         this._id = value;
@@ -44,6 +49,10 @@ class Room {
     
     set personList(value) { 
         this._personList = value;
+    }
+
+    set energyTimerId(value) {
+        this._energyTimerId = value;
     }
 
     getDueler(mode, waitingList, person) {
@@ -81,7 +90,7 @@ function getPVP(waitingList, person) {
     let choosedPerson;
     waitingList.array.forEach(function(element, idx) {
         choosedPerson.push(element);
-        delete waitingList[idx];
+        waitingList.splice(idx, 1); // remove element
         return choosedPerson;
     }, this);
     waitingList.push(person);
@@ -91,7 +100,7 @@ function getPVP(waitingList, person) {
 function getDraft(waitingList, person) {
     waitingList.array.forEach(function(element, idx) {
         choosedPerson.push(element);
-        delete waitingList[idx];
+        waitingList.splice(idx, 1); // remove element
         if (choosedPerson.length >= 3)
             return choosedPerson;
     }, this);

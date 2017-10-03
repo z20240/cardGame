@@ -1,6 +1,10 @@
-var roomControl = require('../gameControl/roomControl.js');
+var RoomControl = require('../gameControl/roomControl.js');
+var PlayerControl = require('../gameControl/playerControl.js');
 
-var roomControl = new roomControl();
+var Dumper = require('../tool/Dumper.js');
+
+var roomControl = new RoomControl();
+var playerControl = new PlayerControl();
 
 function game(io) {
     io.on('connection', (socket) => {
@@ -8,13 +12,21 @@ function game(io) {
 
         // user in
         socket.on('add user', (playerInfo) => {
-            playerControl.getUser(socket, io, playerInfo.name, playerInfo.uid);
-            roomControl.addUser(socket, io, name, personCount);
+            let uid, name, mode;
+            [uid, name, mode] = [playerInfo.uid, playerInfo.name, playerInfo.mode];
+
+            // 這部分之後由 lobby server 傳進來
+            let player = playerControl.getUser(uid, name);
+            let room = roomControl.addUser(socket, io, player);
+
+            // 達成開始遊戲的門檻
+            roomControl.gameStart(socket, io, room, mode);            
         });
 
         // playcard
         socket.on('play card', (gameInfo) => {
-            roomControl.playCard(socket, io, gameInfo)
+            let room = roomControl.roomlist.getRoomById(gameInfo.roomId);
+            playerControl.playCard(socket, io, gameInfo, room);
         }) ;
 
         // left

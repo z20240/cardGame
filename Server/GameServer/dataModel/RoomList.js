@@ -1,6 +1,7 @@
 "use strict"; //使用strict mode(嚴格模式)
 var Constant = require('./Constant.js');
 var Room = require('./Room.js');
+var Mode = require('../dataModel/Mode.js');
 
 class RoomList {
     constructor () {
@@ -17,7 +18,8 @@ class RoomList {
     isFull() {
         let ki = Object.keys(this._roomlist);
         for (let i = 0 ; i < ki.length ; i++) {
-            if (this._roomlist[ki[i]].personList.length < this._roomlist[ki[i]].mode)
+            let room = this._roomlist[ki[i]];
+            if ( !Mode.checkGameStart(room.personList.length, room.mode ) )
                 return false ;
         }
         return true;
@@ -26,46 +28,75 @@ class RoomList {
     getAvailableRoom() {
         let ki = Object.keys(this._roomlist);
         for (let i = 0 ; i < ki.length ; i++) {
-            if (this._roomlist[ki[i]].personList.length < this._roomlist[ki[i]].mode)
-                return this._roomlist[ki[i]];
+            let room = this._roomlist[ki[i]];
+            if ( !Mode.checkGameStart(room.personList.length, room.mode ) )
+                return room;
         }
         return null;
     };
 
-    getRoomByName(name) { // roomName = roomIndx
-        return this._roomlist[name];
+    getRoomById(id) { // roomid = roomIndx
+        return this._roomlist[id];
     }
 
-    getRoomById(id) {
+    getRoomByName(name) {
         let ki = Object.keys(this._roomlist);
         for (let i = 0 ; i < ki.length ; i++) {
-            if (this._roomlist[ki[i]].id == id)
-                return this._roomlist[ki[i]];
+            if (this._roomlist[ki[i]].name != name)
+                continue;
+            return this._roomlist[ki[i]];
         }
+    }
+
+    getRoomNumber() {
+        return this._roomlist.length;    
+    }
+
+    reomveRoomById(id) {
+        let self = this;
+        
+        clearInterval(self._roomlist[id].energyTimerId); // 停止計時
+        self._roomlist[id] = null;
+        return self._roomlist;
+    }
+
+    reomveRoomByName(name) {
+        let self = this;
+        let ki = Object.keys(self._roomlist);
+        for (let i = 0 ; i < ki.length ; i++) {
+            if (self._roomlist[ki[i]].name != name) 
+                continue;
+            
+            clearInterval(self._roomlist[ki[i]].energyTimerId); // 停止計時
+            self._roomlist[ki[i]] = null;
+            
+        }
+        return self._roomlist;
     }
 
     newRoom(mode, name) {
-        // let newRoom = Room.createNew(this._roomlist.length+1, name, mode);
         let newRoom = new Room(this._roomlist.length+1, name, mode);
-        this._roomlist[name] = newRoom;
+        this._roomlist[newRoom.id] = newRoom;
         return newRoom;
     }
 
-    personLeft(name) {
-        let ki = Object.keys(this._roomlist);
-        for (let i = 0 ; i < ki.length ; i++) {
-            let persons = this._roomlist[ki[i]].personList;
-            for (let j = 0 ; j < persons.length ;j++) {
-                if (persons[i] != name) 
-                    continue;
-                delete persons[i];
-                break;
-            }
-            if (persons.length > 0)
+    playerLeft(uid, roomid) {
+        let self = this;
+        let room = this.getRoomById(roomid);
+
+        if (!uid || !roomid) return ;
+
+        for (let i = 0 ; i < room.personList.length ; i++) {
+            console.log("list uid", room.personList[i].id, uid);
+            if (room.personList[i].id != uid)
                 continue;
-            delete this._roomlist[ki[i]];
+            room.personList.splice(i, 1);
+
+            if (room.personList.length <= 0)
+                self.reomveRoomById(roomid);
+            return true ;
         }
-        return this;
+        return false;
     }
 }
 

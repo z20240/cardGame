@@ -3,9 +3,10 @@ var Constant = require('./Constant.js');
 var Deck = require('./Deck.js');
 
 class Person {
-    constructor (id, job, name, lv, deck) {
+    constructor (id, name,job, lv, deck) {
         let attr = this.JobAttr(job);
         this._id = id ;            // 玩家編號
+        this._roomid = 0;          // 所屬的房間ID(一開始不會有，加入房間後設置)
         this._name = name ;        // 名稱
         this._job = job ;          // 職業
         this._atk = attr["atk"];   // 物理攻擊
@@ -32,6 +33,8 @@ class Person {
         this._monsterZone = [0, 0 , 0]; // 怪物區初始化
     }
 
+
+    get roomid() { return this._id };
     get id() { return this._id };
     get name() { return this._name };
     get job() { return this._job };
@@ -53,6 +56,7 @@ class Person {
 
     
     set id(value) { this._id = value };
+    set roomid(value) { this._roomid = value };
     set name(value) { this._name = value };
     set job(value) { this._job = value };
     set atk(value) { this._atk = value };
