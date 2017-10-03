@@ -1,7 +1,7 @@
 var Constant = require('../dataModel/Constant.js');
 var Dumper = require('../tool/Dumper.js');
 
-class GameControl {
+class GameLogic {
     static playCard(gameInfo, room) {
         let player = room.getPersonById(gameInfo.playerId);
         let enemy = room.getPersonById(gameInfo.enemyId);
@@ -9,18 +9,16 @@ class GameControl {
         let gameObj = playCard(room, player, enemy, handIdx);
         return gameObj;
     }
-} 
+}
 
 // 玩家出牌
 function playCard(room, player, enemy, idx) {
-    let cost = player.cost;
-    let roomId = room.name;
-    let card = null;
-    // console.log("player", player);
-    // console.log( "enemy", enemy);
+    let cost, roomId, card, enemyDef, dmg;
+    enemyDef = (enemy.def + enemy.cardDef);
+    [roomId, card, dmg] = [room.id, null, 0];
 
-    let enemyDef = enemy.def + enemy.cardDef;
-    let dmg = 0;
+    cost = player.cost;
+
     // 1. 檢查費用夠不夠，不夠就直接 return;
     console.log(idx, "  player_cost:", player.hand[idx].cost, " card_cost:", cost);
     if (player.hand[idx].cost > cost)
@@ -28,24 +26,25 @@ function playCard(room, player, enemy, idx) {
 
     // 2. 扣費、出牌
     card = player.hand[idx];
-    
-    // 2.1 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
-    if (card.type == Constant.CARD_TYPE.NPC) {
-        if (!monsterSummon(card, player)) { // 沒位置召喚了
-             return { roomId : roomId, user : [player, enemy] } ;
-        }
-    } else {
-        player.showCard = card;
-    }
-
     player.cost -= card.cost;
     player.hand[idx] = null;
+
+    // 2.1 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
+    player.showCard = card;
+
+    // 召喚 ＮＰＣ
+    if (player.showCard.type == Constant.CARD_TYPE.NPC) {
+        if (!monsterSummon(card, player)) { // 若沒有位置則不召喚
+            return { roomId : roomId, user : [player, enemy] } ;
+        } else { // 召喚完成，將showCard清空
+            player.showCard = null;
+        }
+    }
 
     // 3. 出牌處理效果(之後做 call method)
 
     // 4-1. 處理傷害 (call method)
     dmg = calcardDmg(player, card, enemyDef);
-
     for(let i = 0 ; i < dmg ; i++) { // 噴牌
         enemy.grave.push(enemy.deck.draw());
     }
@@ -92,7 +91,6 @@ function calcardDmg(player, card, enemyDef) {
     }
 }
 
-
 function monsterSummon(card, player) {
     switch (player.fieldDist) {
     case 0 : // 000
@@ -111,8 +109,8 @@ function monsterSummon(card, player) {
         player.field[0] = card;
         player.fieldDist += 1;
         return 1;
-    case 8 : // 111
+    case 7 : // 111
         return 0;
     }
 }
-module.exports = GameControl;
+module.exports = GameLogic;

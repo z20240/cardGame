@@ -11,43 +11,43 @@ class Room {
         this._personList = [];
     }
 
-    get id() { 
+    get id() {
         return parseInt(this._id);
     }
-    get count() { 
+    get count() {
         return this._count;
     }
-    get name() { 
+    get name() {
         return this._name;
     }
-    get mode() { 
+    get mode() {
         return parseInt(this._mode);
     }
-    get personList() { 
+    get personList() {
         return this._personList;
     }
 
     get energyTimerId() {
         return this._energyTimerId;
     }
-    
-    set id(value) { 
+
+    set id(value) {
         this._id = value;
     }
-    
-    set count(value) { 
+
+    set count(value) {
         this._count = value;
     }
-    
-    set name(value) { 
+
+    set name(value) {
         this._name = value;
     }
-    
-    set mode(value) { 
+
+    set mode(value) {
         this._mode = value;
     }
-    
-    set personList(value) { 
+
+    set personList(value) {
         this._personList = value;
     }
 
