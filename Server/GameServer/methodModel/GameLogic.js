@@ -24,33 +24,41 @@ function playCard(room, player, enemy, idx) {
     if (player.hand[idx].cost > cost)
         return { roomId : roomId, user : [player, enemy] } ;
 
-    // 2. 扣費、出牌
-    card = player.hand[idx];
+    // 2-0. 扣費、出牌
+    player.showCard = card = player.hand[idx];
     player.cost -= card.cost;
     player.hand[idx] = null;
 
-    // 2.1 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
-    player.showCard = card;
+    // 2-1. 出牌處理效果(之後做 call method)
 
-    // 召喚 ＮＰＣ
+    // 3. 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
     if (player.showCard.type == Constant.CARD_TYPE.NPC) {
-        if (!monsterSummon(card, player)) { // 若沒有位置則不召喚
-            return { roomId : roomId, user : [player, enemy] } ;
-        } else { // 召喚完成，將showCard清空
+        // 若沒有位置則不召喚
+        let idx = getSummonPlace(card, player);
+
+        if (idx < 0) { // 無處可召喚
             player.showCard = null;
+            return { roomId : roomId, user : [player, enemy] } ;
         }
+
+        // 喚醒所有的召喚獸
+        player.field.forEach(mob => { awakeMonster(mob); }, this);
+
+        // 召喚 ＮＰＣ
+        monsterSummon(player, card, idx)
+    } else {
+        // 4-1. 處理傷害 (call method)
+        dmg = calcardDmg(player, card, enemyDef);
+
+        // 噴牌
+        enemy = dealDamage(enemy, dmg);
+
+        // 4-2. 獲得卡片防禦力
+        player.cardDef += card.def;
+
+        // 卡片放入墓的
+        player.grave.push(player.showCard);
     }
-
-    // 3. 出牌處理效果(之後做 call method)
-
-    // 4-1. 處理傷害 (call method)
-    dmg = calcardDmg(player, card, enemyDef);
-    for(let i = 0 ; i < dmg ; i++) { // 噴牌
-        enemy.grave.push(enemy.deck.draw());
-    }
-
-    // 4-2. 獲得卡片防禦力
-    player.cardDef += card.def;
 
     // 對方防禦回復
     enemy.cardDef = 0;
@@ -59,10 +67,8 @@ function playCard(room, player, enemy, idx) {
     player.hand[idx] = player.deck.draw();
 
     // 6. 若有 showCard 則清空
-    if (player.showCard != null) {
-        player.grave.push(player.showCard);
+    if (player.showCard != null)
         player.showCard = null;
-    }
 
     return { roomId : roomId, user : [player, enemy] } ;
 }
@@ -87,30 +93,36 @@ function calcardDmg(player, card, enemyDef) {
         case Constant.CARD_TYPE.DECORATION :
             val = (card.atk + player.cardDmg) - enemyDef;
             console.log("(card_atk)" + card.atk + " - (enemyDef)" + enemyDef + " = " + val);
-            return ;
+            return val;
     }
 }
 
-function monsterSummon(card, player) {
-    switch (player.fieldDist) {
-    case 0 : // 000
-    case 1 : // 001
-    case 2 : // 010
-    case 3 : // 011
-        player.field[2] = card;
-        player.fieldDist += 4;
-        return 4;
-    case 4 : // 100
-    case 5 : // 101
-        player.field[1] = card;
-        player.fieldDist += 2;
-        return 2;
-    case 6 : // 110
-        player.field[0] = card;
-        player.fieldDist += 1;
-        return 1;
-    case 7 : // 111
-        return 0;
+function dealDamage(person, dmg) {
+    for(let i = 0 ; i < dmg ; i++) { // 噴牌
+        person.grave.push(person.deck.draw());
     }
+    return person;
+}
+
+function monsterSummon(player, card, idx) {
+    if (idx > 2) return;
+
+    card.sleep = true;
+    player.field[idx] = card;
+    player.fieldDist += parseInt(Math.pow(2,idx));
+}
+
+function getSummonPlace(card, player) {
+    let val = 0;
+    if (player.fieldDist < 4) return 2; // 001 010 011
+    else if (player.fieldDist < 6) return 1; // 100 101
+    else if (player.fieldDist < 7) return 0; // 110
+    else return -1; // 111
+}
+
+function awakeMonster(mob) {
+    if (!mob) return;
+    console.log("mob", mob);
+    mob.sleep = false;
 }
 module.exports = GameLogic;
