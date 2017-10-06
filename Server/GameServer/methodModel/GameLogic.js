@@ -24,6 +24,12 @@ function playCard(room, player, enemy, idx) {
     if (player.hand[idx].cost > cost)
         return { roomId : roomId, user : [player, enemy] } ;
 
+    // 1-1. 檢查若為ＮＰＣ，是否可召喚
+    if (player.hand[idx].type == Constant.CARD_TYPE.NPC) {
+        if (getSummonPlace(player, player.hand[idx]) < 0)
+        return { roomId : roomId, user : [player, enemy] } ;
+    }
+
     // 2-0. 扣費、出牌
     player.showCard = card = player.hand[idx];
     player.cost -= card.cost;
@@ -31,34 +37,20 @@ function playCard(room, player, enemy, idx) {
 
     // 2-1. 出牌處理效果(之後做 call method)
 
+    // 2-2. npc自動攻擊
+    [player, enemy] = playerNPCattack(player, enemy, enemyDef);
+
     // 3. 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
     if (player.showCard.type == Constant.CARD_TYPE.NPC) {
-        // 若沒有位置則不召喚
-        let idx = getSummonPlace(card, player);
-
-        if (idx < 0) { // 無處可召喚
-            player.showCard = null;
-            return { roomId : roomId, user : [player, enemy] } ;
-        }
-
-        // 喚醒所有的召喚獸
-        player.field.forEach(mob => { awakeMonster(mob); }, this);
-
-        // 召喚 ＮＰＣ
-        monsterSummon(player, card, idx)
+        player = monsterSummon(player, card);
     } else {
-        // 4-1. 處理傷害 (call method)
-        dmg = calcardDmg(player, card, enemyDef);
+        [player, enemy] = dealDamage(player, enemy, card, enemyDef);
 
-        // 噴牌
-        enemy = dealDamage(enemy, dmg);
-
-        // 4-2. 獲得卡片防禦力
-        player.cardDef += card.def;
-
-        // 卡片放入墓的
-        player.grave.push(player.showCard);
+        player.grave.push(player.showCard); // 卡片放入墓的
     }
+
+    // 獲得卡片防禦力
+    player.cardDef += card.def;
 
     // 對方防禦回復
     enemy.cardDef = 0;
@@ -69,6 +61,14 @@ function playCard(room, player, enemy, idx) {
     // 6. 若有 showCard 則清空
     if (player.showCard != null)
         player.showCard = null;
+
+    // 7. 將血量歸零的ＮＰＣ送回牌組
+    for (let i = 0 ; i < player.field.length ; i++) {
+        if (player.field[i] == null)
+            continue;
+        player = shuffleCardBack2Deck(player, player.field[i]);
+        player.field[i] = null;
+    }
 
     return { roomId : roomId, user : [player, enemy] } ;
 }
@@ -97,32 +97,69 @@ function calcardDmg(player, card, enemyDef) {
     }
 }
 
-function dealDamage(person, dmg) {
+function dealDamage(player, enemy, card, enemyDef) {
+    // 4-1. 處理傷害 (call method)
+    let dmg = calcardDmg(player, card, enemyDef);
+
+    // 噴牌
+    enemy = dealDamage_ack(enemy, dmg);
+    return [player, enemy];
+}
+
+function dealDamage_ack(person, dmg) {
     for(let i = 0 ; i < dmg ; i++) { // 噴牌
         person.grave.push(person.deck.draw());
     }
     return person;
 }
 
-function monsterSummon(player, card, idx) {
-    if (idx > 2) return;
+function monsterSummon(player, card) {
+    let idx = getSummonPlace(player, card);
 
-    card.sleep = true;
-    player.field[idx] = card;
-    player.fieldDist += parseInt(Math.pow(2,idx));
+    console.log('playerfield', idx, 'card name', card.name);
+
+    // 召喚 ＮＰＣ
+    player = monsterSummon_ack(player, card, idx);
+    return player;
 }
 
-function getSummonPlace(card, player) {
+function monsterSummon_ack(player, card, idx) {
+    console.log("[monsterSummon_ack] idx", idx);
+    if (idx > 2) return player;
+
+    player.field[idx] = card;
+    player.fieldDist += parseInt(Math.pow(2,idx));
+    return player;
+}
+
+function playerNPCattack(player, enemy, enemyDef) {
+    for (let i = 0 ; i < player.field.length ; i++) {
+        if (player.field[i] == null)
+            continue;
+
+        [player, enemy] = dealDamage(player, enemy, player.field[i], enemyDef);
+        player.field[i].def--; // 生命值減1
+    }
+    return [player, enemy];
+}
+
+function shuffleCardBack2Deck(player, card) {
+    player.deck.insert(card);
+    player.deck.shuffle();
+    return player;
+}
+
+function getSummonPlace(player, card) {
     let val = 0;
+
+    console.log('player Dist : ', player.fieldDist);
+
     if (player.fieldDist < 4) return 2; // 001 010 011
     else if (player.fieldDist < 6) return 1; // 100 101
     else if (player.fieldDist < 7) return 0; // 110
     else return -1; // 111
 }
 
-function awakeMonster(mob) {
-    if (!mob) return;
-    console.log("mob", mob);
-    mob.sleep = false;
-}
+
+
 module.exports = GameLogic;
