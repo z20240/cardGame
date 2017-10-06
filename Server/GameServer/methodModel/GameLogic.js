@@ -20,14 +20,15 @@ function playCard(room, player, enemy, idx) {
     cost = player.cost;
 
     // 1. 檢查費用夠不夠，不夠就直接 return;
-    console.log(idx, "  player_cost:", player.hand[idx].cost, " card_cost:", cost);
+    console.log("[ == 檢查費用 ==]");
+    console.log("卡片:"+player.hand[idx].name, " 玩家cost:", cost, " 卡片cost:", player.hand[idx].cost);
     if (player.hand[idx].cost > cost)
         return { roomId : roomId, user : [player, enemy] } ;
 
     // 1-1. 檢查若為ＮＰＣ，是否可召喚
     if (player.hand[idx].type == Constant.CARD_TYPE.NPC) {
         if (getSummonPlace(player, player.hand[idx]) < 0)
-        return { roomId : roomId, user : [player, enemy] } ;
+            return { roomId : roomId, user : [player, enemy] };
     }
 
     // 2-0. 扣費、出牌
@@ -38,6 +39,7 @@ function playCard(room, player, enemy, idx) {
     // 2-1. 出牌處理效果(之後做 call method)
 
     // 2-2. npc自動攻擊
+    console.log("[ == npc自動攻擊] ==");
     [player, enemy] = playerNPCattack(player, enemy, enemyDef);
 
     // 3. 判斷卡片種類，如果是 npc 就放置場上，其他則丟入 stacks
@@ -56,7 +58,9 @@ function playCard(room, player, enemy, idx) {
     enemy.cardDef = 0;
 
     // 5. 補牌
+    console.log('[補牌] pre 牌組數量', player.deck.length);
     player.hand[idx] = player.deck.draw();
+    console.log('[補牌] post 牌組數量', player.deck.length);
 
     // 6. 若有 showCard 則清空
     if (player.showCard != null)
@@ -116,15 +120,18 @@ function dealDamage_ack(person, dmg) {
 function monsterSummon(player, card) {
     let idx = getSummonPlace(player, card);
 
-    console.log('playerfield', idx, 'card name', card.name);
+    console.log(' == [NPC 召喚] 位置', idx, ' ＮＰＣ 名稱:', card.name);
 
     // 召喚 ＮＰＣ
     player = monsterSummon_ack(player, card, idx);
+    console.log("==========召喚完後,玩家狀態========");
+    console.log(player);
+
     return player;
 }
 
 function monsterSummon_ack(player, card, idx) {
-    console.log("[monsterSummon_ack] idx", idx);
+    console.log("    [開始NPC召喚] 位置", idx);
     if (idx > 2) return player;
 
     player.field[idx] = card;
@@ -133,10 +140,10 @@ function monsterSummon_ack(player, card, idx) {
 }
 
 function playerNPCattack(player, enemy, enemyDef) {
+    console.log("[ == NPC 攻擊] ==");
     for (let i = 0 ; i < player.field.length ; i++) {
         if (player.field[i] == null)
             continue;
-
         [player, enemy] = dealDamage(player, enemy, player.field[i], enemyDef);
         player.field[i].def--; // 生命值減1
     }
@@ -152,7 +159,7 @@ function shuffleCardBack2Deck(player, card) {
 function getSummonPlace(player, card) {
     let val = 0;
 
-    console.log('player Dist : ', player.fieldDist);
+    console.log('取得召喚位置 ＮＰＣ分佈 :', player.fieldDist);
 
     if (player.fieldDist < 4) return 2; // 001 010 011
     else if (player.fieldDist < 6) return 1; // 100 101
