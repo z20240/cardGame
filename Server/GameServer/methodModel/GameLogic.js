@@ -58,22 +58,30 @@ function playCard(room, player, enemy, idx) {
     enemy.cardDef = 0;
 
     // 5. 補牌
-    console.log('[補牌] pre 牌組數量', player.deck.length);
+    console.log('[補牌] pre 牌組數量', player.deck.cards.length);
     player.hand[idx] = player.deck.draw();
-    console.log('[補牌] post 牌組數量', player.deck.length);
+    console.log('[補牌] post 牌組數量', player.deck.cards.length);
 
     // 6. 若有 showCard 則清空
     if (player.showCard != null)
         player.showCard = null;
 
     // 7. 將血量歸零的ＮＰＣ送回牌組
+    console.log("[怪物堆數量]", player.field.length);
     for (let i = 0 ; i < player.field.length ; i++) {
         if (player.field[i] == null)
             continue;
-        player = shuffleCardBack2Deck(player, player.field[i]);
-        player.field[i] = null;
+        console.log("["+i+"]", player.field[i].name, " hp:"+player.field[i].cost);
+        if (player.field[i].cost <= 0) {
+            player = shuffleCardBack2Deck(player, player.field[i], i);
+            player.field[i] = null;
+            player.fieldDist -= parseInt(Math.pow(2,i));
+        }
     }
 
+    console.log("＝＝＝ [計算結束] ＝＝＝");
+    console.log("玩家：", player);
+    console.log("敵方：", enemy);
     return { roomId : roomId, user : [player, enemy] } ;
 }
 
@@ -145,7 +153,7 @@ function playerNPCattack(player, enemy, enemyDef) {
         if (player.field[i] == null)
             continue;
         [player, enemy] = dealDamage(player, enemy, player.field[i], enemyDef);
-        player.field[i].def--; // 生命值減1
+        player.field[i].cost--; // 生命值減1
     }
     return [player, enemy];
 }

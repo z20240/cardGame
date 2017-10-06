@@ -179,18 +179,21 @@ function drawGround(player, enemy) {
         $('#player_mob1').text(player._field[0]._name);
         $('#player_mob1').show();
     } else {
+        $('#player_mob1').text("");
         $('#player_mob1').hide();
     }
     if (player._field[1] != null) {
         $('#player_mob2').text(player._field[1]._name);
         $('#player_mob2').show();
     } else {
+        $('#player_mob2').text("");
         $('#player_mob2').hide();
     }
     if (player._field[2] != null) {
         $('#player_mob3').text(player._field[2]._name);
         $('#player_mob3').show();
     } else {
+        $('#player_mob3').text("");
         $('#player_mob3').hide();
     }
 
@@ -198,18 +201,21 @@ function drawGround(player, enemy) {
         $('#enemy_mob1').text(enemy._field[0]._name);
         $('#enemy_mob1').show();
     } else {
+        $('#enemy_mob1').text("");
         $('#enemy_mob1').hide();
     }
     if (enemy._field[1] != null) {
         $('#enemy_mob2').text(enemy._field[1]._name);
         $('#enemy_mob2').show();
     } else {
+        $('#enemy_mob2').text("");
         $('#enemy_mob2').hide();
     }
     if (enemy._field[2] != null) {
         $('#enemy_mob3').text(enemy._field[2]._name);
         $('#enemy_mob3').show();
     } else {
+        $('#enemy_mob3').text("");
         $('#enemy_mob3').hide();
     }
 
