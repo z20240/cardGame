@@ -1,5 +1,5 @@
 var Constant = require('../dataModel/Constant.js');
-var Dumper = require('../tool/Dumper.js');
+var Tool = require('../tool/Tool.js');
 
 var RoomDispatch = function(roomList, mode, player) {
     /* 進行配對，給予房間編號 */
@@ -8,7 +8,7 @@ var RoomDispatch = function(roomList, mode, player) {
     console.log("roomList:", roomList);
 
     // 所有房間都滿了就要開新房間
-    if (roomList.isFull()) { 
+    if (roomList.isFull()) {
         room = roomList.newRoom(mode, roomList.getRoomNumber()+1);
         console.log("Create Room" + room.id);
     } else { // 取得適合的房間
@@ -18,7 +18,7 @@ var RoomDispatch = function(roomList, mode, player) {
 
     player.roomid = room.id;
     room.personList.push(player); // 加入房間
-    console.log("[Room]", Dumper(room, 4));
+    console.log("[Room]", Tool.dumper(room, 4));
     return room;
 }
 

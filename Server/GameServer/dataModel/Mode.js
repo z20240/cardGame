@@ -1,5 +1,4 @@
 var Constant = require('../dataModel/Constant.js');
-var Dumper = require('../tool/Dumper.js');
 
 class Mode {
     constructor() {

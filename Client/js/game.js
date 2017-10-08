@@ -171,7 +171,7 @@ function drawGround(player, enemy) {
     $('#playerCardAtk').text(player._cardDmg);
     $('#playerCardDef').text(player._cardDef);
 
-    $('#playerDeckSize').text(player._deck._cards.length);
+    $('#playerDeckSize').text(player._deck._size);
     $('#playerBanishSize').text(player._banishlength);
     $('#playerGraveSize').text(player._grave.length);
 
@@ -225,7 +225,7 @@ function drawGround(player, enemy) {
     $('#enemyDef').text(enemy._def);
     $('#enemyCardDef').text(enemy._cardDef);
 
-    $('#enemyDeckSize').text(enemy._deck._cards.length);
+    $('#enemyDeckSize').text(enemy._deck._size);
     $('#enemyBanishSize').text(enemy._banish.length);
     $('#enemyGraveSize').text(enemy._grave.length);
 

@@ -1,8 +1,6 @@
 var RoomControl = require('../gameControl/roomControl.js');
 var PlayerControl = require('../gameControl/playerControl.js');
 
-var Dumper = require('../tool/Dumper.js');
-
 var roomControl = new RoomControl();
 var playerControl = new PlayerControl();
 
@@ -20,7 +18,7 @@ function game(io) {
             let room = roomControl.addUser(socket, io, player);
 
             // 達成開始遊戲的門檻
-            roomControl.gameStart(socket, io, room, mode);            
+            roomControl.gameStart(socket, io, room, mode);
         });
 
         // playcard

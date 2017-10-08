@@ -9,6 +9,7 @@ class Room {
         this._name = name;
         this._mode = mode;
         this._personList = [];
+        this._state = [];
     }
 
     get id() {
@@ -79,6 +80,48 @@ class Room {
 
     getPersonByIdx(idx) {
         return this.personList[idx];
+    }
+
+
+    getState(idx) {
+        if (Tool.isEmpty(idx)) return null;
+
+        return this._state[idx];
+    }
+
+    setState(idx, value) {
+        if (Tool.isEmpty(idx)) return null;
+
+        if (Tool.isEmpty(value)) {
+            this._state[idx] = 1;
+            return this._state[idx];
+        }
+
+        this._state[idx] = value;
+        return this._state[idx];
+    }
+
+    addState(idx, value) {
+        if (Tool.isEmpty(idx)) return null;
+
+        if (Tool.isEmpty(value)) {
+            this._state[idx] += 1;
+            return this._state[idx];
+        }
+
+        this._state[idx] += value;
+        return this._state[idx];
+    }
+
+    clearState(idx) {
+        if (Tool.isEmpty(idx)) {
+            this._state = [];
+            this._state.length = 0;
+            return;
+        }
+
+        this._state[idx] = null;
+        return;
     }
 }
 

@@ -24,9 +24,10 @@ class Person {
         this._showCard = null; // 這次出的卡片
         this._stack = []; // 效果陣列
         this._deck = new Deck(deck.id, deck.name, deck.cards);
-        
+        this._state = []; // 附加狀態可以從這邊增加
+
         this._deck.shuffle();  // 玩家牌組洗牌
-        console.log("deck size", this._deck.cards.length, deck.cards.length);
+        console.log("deck size", this._deck.size, deck.size);
         for (let i = 0 ; i < 3 ; i++) { // 起手三張牌
             this._hand.push(this._deck.draw());  // 玩家手牌
         }
@@ -54,7 +55,7 @@ class Person {
     get stack() { return this._stack };
     get deck() { return this._deck };
 
-    
+
     set id(value) { this._id = value };
     set roomid(value) { this._roomid = value };
     set name(value) { this._name = value };
@@ -74,7 +75,7 @@ class Person {
     set showCard(value) { this._card = value };
     set stack(value) { this._stack = value };
     set deck(value) { this._deck = value };
-    
+
 
     JobAttr(job) {
         switch(job) {
@@ -86,6 +87,47 @@ class Person {
             default:
             case Constant.JOB.NONE: return { "atk": 0, "matk": 0, "def": 0 }; // 中立
         }
+    }
+
+    getState(idx) {
+        if (Tool.isEmpty(idx)) return null;
+
+        return this._state[idx];
+    }
+
+    setState(idx, value) {
+        if (Tool.isEmpty(idx)) return null;
+
+        if (Tool.isEmpty(value)) {
+            this._state[idx] = 1;
+            return this._state[idx];
+        }
+
+        this._state[idx] = value;
+        return this._state[idx];
+    }
+
+    addState(idx, value) {
+        if (Tool.isEmpty(idx)) return null;
+
+        if (Tool.isEmpty(value)) {
+            this._state[idx] += 1;
+            return this._state[idx];
+        }
+
+        this._state[idx] += value;
+        return this._state[idx];
+    }
+
+    clearState(idx) {
+        if (Tool.isEmpty(idx)) {
+            this._state = [];
+            this._state.length = 0;
+            return;
+        }
+
+        this._state[idx] = null;
+        return;
     }
 }
 

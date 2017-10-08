@@ -4,7 +4,6 @@ var Person = require('../dataModel/Person.js');
 var Mode = require('../dataModel/Mode.js');
 var RoomDispatch = require('../methodModel/RoomDispatch.js');
 var DeckList = require('../CardData/DeckList.js');
-var Dumper = require('../tool/Dumper.js');
 
 class RoomControl {
 
