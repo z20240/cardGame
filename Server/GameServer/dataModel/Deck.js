@@ -53,13 +53,15 @@ class Deck {
     }
 
     draw() {
+        let card = this.cards.pop();
         this._size = this.cards.length;
-        return this._cards.pop();
+        return card;
     }
 
     insert(_card) {
+        this.cards.push(_card);
         this._size = this.cards.length;
-        return this._cards.push(_card);
+        return this.cards;
     }
 
     getState(idx) {
