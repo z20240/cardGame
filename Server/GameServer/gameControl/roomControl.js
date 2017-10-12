@@ -42,9 +42,11 @@ class RoomControl {
 
     userDisconnect(socket, io) {
         let self = this;
-        let removeSuccess = self.roomList.playerLeft(socket.personId, socket.roomId);
+        console.log("房號", socket.roomId, "的", socket.personName + " 要離開了");
+        let removeSuccess = self.roomList.playerLeft(socket.roomId, socket.personId);
         socket.to(socket.roomId).emit('user left', {roomId: socket.roomId, name: socket.personName, uid: socket.personId});
-        console.log(socket.roomId, socket.personName + " left.");
+        console.log("房號", socket.roomId, "的", socket.personName + " 已經離開");
+        console.log("查看房間的狀況", self.roomList.roomlist);
     }
 }
 

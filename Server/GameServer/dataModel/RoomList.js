@@ -2,7 +2,9 @@
 var Constant = require('./Constant.js');
 var Room = require('./Room.js');
 var Mode = require('../dataModel/Mode.js');
+var Tool = require('../tool/Tool.js');
 var _ = require('lodash');
+const chalk = require('chalk');
 
 class RoomList {
     constructor () {
@@ -18,7 +20,6 @@ class RoomList {
 
     isFull() {
         let ki = Object.keys(this._roomlist);
-        console.log("room ki", ki);
         for (let i = 0 ; i < ki.length ; i++) {
             let room = this._roomlist[ki[i]];
             if ( !Mode.checkGameStart(room.personList.length, room.mode ) )
@@ -70,7 +71,10 @@ class RoomList {
                 continue;
 
             clearInterval(self._roomlist[ki[i]].energyTimerId); // 停止計時
-            _.remove(self._roomlist, (ele) => { if (!ele) return false; return ele.nmae == name});
+            _.remove(self._roomlist, (ele) => {
+                if (!ele) return false;
+                return (ele.nmae == name);
+            });
         }
         return self._roomlist;
     }
@@ -81,18 +85,22 @@ class RoomList {
         return newRoom;
     }
 
-    playerLeft(uid, roomid) {
+    playerLeft(roomid, uid) {
         let self = this;
         let room = this.getRoomById(roomid);
 
-        if (!uid || !roomid) return ;
+        if (!uid || !roomid) return false;
+
+        console.log("玩家:", uid, "房間ID:", roomid, "查看房間:", room, "比較:", self.roomlist[roomid]);
 
         for (let i = 0 ; i < room.personList.length ; i++) {
             console.log("list uid", room.personList[i].id, uid);
-            console.log();
             if (room.personList[i].id != uid)
                 continue;
-            _.remove(room.personList, (ele) => { if (!ele) return false; return ele.id == uid });
+            _.remove(room.personList, (ele) => {
+                if (!ele) return false;
+                return (ele.id == uid);
+            });
 
             if (room.personList.length <= 0)
                 self.reomveRoomById(roomid);

@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var cardMethod = require('./routes/cardMethod');
+// var cardMethod = require('./routes/cardMethod');
 var game = require('./socket/socket'); // 2. 將剛剛寫的 socket.js 導入
 
 var app = express();
@@ -34,7 +34,7 @@ app.use(function(req, res, next) { // 設定標頭
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/cardMethod', cardMethod);
+// app.use('/cardMethod', cardMethod);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
