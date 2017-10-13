@@ -17,6 +17,7 @@ var RoomDispatch = function(roomList, mode, player) {
     }
 
     player.roomid = room.id;
+    player.room = room; // 玩家所屬房間
     room.personList.push(player); // 加入房間
     console.log("[room] ", "room:", room.id, "player:", player.name);
     return room;
