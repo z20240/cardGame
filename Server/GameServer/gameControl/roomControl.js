@@ -4,6 +4,7 @@ var Person = require('../dataModel/Person.js');
 var Mode = require('../dataModel/Mode.js');
 var RoomDispatch = require('../methodModel/RoomDispatch.js');
 var DeckList = require('../CardData/DeckList.js');
+const chalk = require('chalk');
 
 class RoomControl {
 
@@ -17,7 +18,7 @@ class RoomControl {
         let room;
         let self = this;
         socket.personName = player.name;
-        socket.personId = player.id;
+        socket.personId = player.uid;
 
         room = RoomDispatch(self.roomList, Constant.BATTLE_MODE.PVP, player);
 
@@ -52,11 +53,11 @@ class RoomControl {
 
 
 function doCountTimer(socket, io, room) {
-    let str = "";
+    let str = chalk.green("[room " + room.id + "]");
 
     for (let i = 0 ; i < room.personList.length ; i++) {
         room.personList[i].cost = Math.min((room.personList[i].cost+1), Constant.MAX_COST);
-        str += ("player_" + i + " : " + room.personList[i].cost + "    ");
+        str += (" player_" + i + " : " + room.personList[i].cost + "    ");
     }
     console.log(str);
     io.in(room.id).emit('cost timer', {user: room.personList, roomId: room.id});

@@ -3,9 +3,9 @@ var Constant = require('./Constant.js');
 var Deck = require('./Deck.js');
 
 class Person {
-    constructor (id, name,job, lv, deck) {
+    constructor (uid, name,job, lv, deck) {
         let attr = this.JobAttr(job);
-        this._id = id ;            // 玩家編號
+        this._id = uid ;            // 玩家編號
         this._roomid = 0;          // 所屬的房間ID(一開始不會有，加入房間後設置)
         this._name = name ;        // 名稱
         this._job = job ;          // 職業
@@ -35,8 +35,8 @@ class Person {
     }
 
 
-    get roomid() { return this._id };
-    get id() { return this._id };
+    get roomid() { return this._roomid };
+    get uid() { return this._id };
     get name() { return this._name };
     get job() { return this._job };
     get atk() { return this._atk };
@@ -56,7 +56,7 @@ class Person {
     get deck() { return this._deck };
 
 
-    set id(value) { this._id = value };
+    set uid(value) { this._id = value };
     set roomid(value) { this._roomid = value };
     set name(value) { this._name = value };
     set job(value) { this._job = value };

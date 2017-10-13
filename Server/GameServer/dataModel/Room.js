@@ -64,9 +64,9 @@ class Room {
         }
     }
 
-    getPersonById(id) {
+    getPersonById(uid) {
         for(let i = 0 ; i < this.personList.length ; i++) {
-            if (this.personList[i].id == id) return this.personList[i];
+            if (this.personList[i].uid == uid) return this.personList[i];
         }
         return null;
     }

@@ -1,5 +1,6 @@
 var Constant = require('../dataModel/Constant.js');
 var Tool = require('../tool/Tool.js');
+const chalk = require('chalk');
 
 class GameLogic {
     static playCard(gameInfo, room) {

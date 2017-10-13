@@ -9,7 +9,7 @@ const chalk = require('chalk');
 class RoomList {
     constructor () {
         this._id = 0;
-        this._roomlist = [];
+        this._roomlist = {};
     }
 
     get id() { return this._id };
@@ -51,15 +51,16 @@ class RoomList {
         }
     }
 
-    getRoomNumber() {
-        return this._roomlist.length;
+    amount() {
+        return Object.keys(this._roomlist).length;
+        // return this._roomlist.length;
     }
 
     reomveRoomById(id) {
         let self = this;
 
         clearInterval(self._roomlist[id].energyTimerId); // 停止計時
-        _.remove(self._roomlist, (ele) => { if (!ele) return false; return ele.id == id });
+        delete self.roomlist[id];
         return self._roomlist;
     }
 
@@ -71,16 +72,13 @@ class RoomList {
                 continue;
 
             clearInterval(self._roomlist[ki[i]].energyTimerId); // 停止計時
-            _.remove(self._roomlist, (ele) => {
-                if (!ele) return false;
-                return (ele.nmae == name);
-            });
+            delete self._roomlist[ki[i]];
         }
         return self._roomlist;
     }
 
     newRoom(mode, name) {
-        let newRoom = new Room(this._roomlist.length+1, name, mode);
+        let newRoom = new Room(this.amount()+1, name, mode);
         this._roomlist[newRoom.id] = newRoom;
         return newRoom;
     }
@@ -94,12 +92,13 @@ class RoomList {
         console.log("玩家:", uid, "房間ID:", roomid, "查看房間:", room, "比較:", self.roomlist[roomid]);
 
         for (let i = 0 ; i < room.personList.length ; i++) {
-            console.log("list uid", room.personList[i].id, uid);
-            if (room.personList[i].id != uid)
+            console.log("list uid", room.personList[i].uid, uid);
+            if (room.personList[i].uid != uid)
                 continue;
+
             _.remove(room.personList, (ele) => {
                 if (!ele) return false;
-                return (ele.id == uid);
+                return (ele.uid == uid);
             });
 
             if (room.personList.length <= 0)

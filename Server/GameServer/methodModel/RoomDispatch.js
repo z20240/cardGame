@@ -9,8 +9,8 @@ var RoomDispatch = function(roomList, mode, player) {
 
     // 所有房間都滿了就要開新房間
     if (roomList.isFull()) {
-        room = roomList.newRoom(mode, roomList.getRoomNumber()+1);
-        console.log("Create Room" + room.id);
+        room = roomList.newRoom(mode, roomList.amount()+1);
+        console.log("Create Room " + room.id);
     } else { // 取得適合的房間
         room = roomList.getAvailableRoom();
         console.log("Join room" + room.id);
@@ -18,7 +18,7 @@ var RoomDispatch = function(roomList, mode, player) {
 
     player.roomid = room.id;
     room.personList.push(player); // 加入房間
-    console.log("[Room]", Tool.dumper(room, 4));
+    console.log("[room] ", "room:", room.id, "player:", player.name);
     return room;
 }
 
