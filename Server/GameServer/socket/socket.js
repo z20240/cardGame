@@ -1,5 +1,7 @@
 var RoomControl = require('../gameControl/roomControl.js');
 var PlayerControl = require('../gameControl/playerControl.js');
+var Mode = require('../dataModel/Mode/Mode.js');
+const chalk = require('chalk');
 
 var roomControl = new RoomControl();
 var playerControl = new PlayerControl();
@@ -16,6 +18,12 @@ function game(io) {
             // 這部分之後由 lobby server 傳進來
             let player = playerControl.getUser(uid, name);
             let room = roomControl.addUser(socket, io, player);
+
+            console.log("mode", room.mode);
+
+            // 如果不人數不符合，不可開始
+            if (!room.mode.checkGameStart(room.personList.length))
+                return ;
 
             // 達成開始遊戲的門檻
             roomControl.gameStart(socket, io, room, mode);

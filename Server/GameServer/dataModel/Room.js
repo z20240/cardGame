@@ -22,7 +22,7 @@ class Room {
         return this._name;
     }
     get mode() {
-        return parseInt(this._mode);
+        return this._mode;
     }
     get personList() {
         return this._personList;

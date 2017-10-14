@@ -1,7 +1,7 @@
 "use strict"; //使用strict mode(嚴格模式)
 var Constant = require('./Constant.js');
 var Room = require('./Room.js');
-var Mode = require('../dataModel/Mode.js');
+var Mode = require('../dataModel/Mode/Mode.js');
 var Tool = require('../tool/Tool.js');
 var _ = require('lodash');
 const chalk = require('chalk');
@@ -22,7 +22,7 @@ class RoomList {
         let ki = Object.keys(this._roomlist);
         for (let i = 0 ; i < ki.length ; i++) {
             let room = this._roomlist[ki[i]];
-            if ( !Mode.checkGameStart(room.personList.length, room.mode ) )
+            if (!room.mode.checkGameStart(room.personList.length))
                 return false ;
         }
         return true;
@@ -32,7 +32,7 @@ class RoomList {
         let ki = Object.keys(this._roomlist);
         for (let i = 0 ; i < ki.length ; i++) {
             let room = this._roomlist[ki[i]];
-            if ( !Mode.checkGameStart(room.personList.length, room.mode ) )
+            if (!room.mode.checkGameStart(room.personList.length))
                 return room;
         }
         return null;
@@ -79,6 +79,7 @@ class RoomList {
 
     newRoom(mode, name) {
         let newRoom = new Room(this.amount()+1, name, mode);
+        newRoom.mode = Mode.get(mode);
         this._roomlist[newRoom.id] = newRoom;
         return newRoom;
     }

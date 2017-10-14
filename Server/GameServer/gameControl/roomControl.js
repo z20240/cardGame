@@ -1,7 +1,6 @@
 var Constant = require('../dataModel/Constant.js');
 var RoomList = require('../dataModel/RoomList.js');
 var Person = require('../dataModel/Person.js');
-var Mode = require('../dataModel/Mode.js');
 var RoomDispatch = require('../methodModel/RoomDispatch.js');
 var DeckList = require('../CardData/DeckList.js');
 const chalk = require('chalk');
@@ -21,7 +20,6 @@ class RoomControl {
         socket.personId = player.uid;
 
         room = RoomDispatch(self.roomList, Constant.BATTLE_MODE.PVP, player);
-
         socket.roomId = room.id;
         socket.join(room.id);
         io.in(room.id).emit('add user', {user: room.personList, roomId: room.id});
@@ -29,13 +27,8 @@ class RoomControl {
         return room;
     }
 
-    gameStart(socket, io, room, mode) {
+    gameStart(socket, io, room) {
         let self = this;
-
-        // 如果不人數不符合，不可開始
-        if ( !Mode.checkGameStart(room.personList.length, mode ) )
-            return ;
-
         // 開始計費
         room.energyTimerId = setInterval(doCountTimer, 2500, socket, io, room);
 
